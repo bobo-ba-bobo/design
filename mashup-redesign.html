@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mashup Ventures</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --bg:      #f8f7f3;
+  --ink:     #0f0e0c;
+  --ink-2:   #807d78;
+  --border:  rgba(15, 14, 12, 0.09);
+  --dark:    #0f0e0c;
+  --dark-2:  #1c1b18;
+  --light:   #edecea;
+  --orange:  #E85517;
+  --orange-dim: rgba(232, 85, 23, 0.12);
+  --font:    'Pretendard', -apple-system, sans-serif;
+  --serif:   'Georgia', serif;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── NAV ──────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 60px;
+  transition: background 0.3s, border-color 0.3s;
+  border-bottom: 1px solid transparent;
+}
+nav.scrolled {
+  background: rgba(248,247,243,0.93);
+  backdrop-filter: blur(14px);
+  border-color: var(--border);
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 15px; font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--light);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.nav-logo-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--orange);
+  flex-shrink: 0;
+}
+nav.scrolled .nav-logo { color: var(--ink); }
+
+.nav-r {
+  display: flex; align-items: center; gap: 32px;
+  list-style: none;
+}
+.nav-r a {
+  font-size: 13px; font-weight: 400;
+  color: rgba(237,236,234,0.5);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+nav.scrolled .nav-r a { color: var(--ink-2); }
+.nav-r a:hover { color: var(--light) !important; }
+nav.scrolled .nav-r a:hover { color: var(--ink) !important; }
+
+.nav-apply {
+  padding: 8px 18px;
+  border: 1px solid var(--orange) !important;
+  border-radius: 4px;
+  color: var(--orange) !important;
+  font-weight: 500 !important;
+  font-size: 12px !important;
+  transition: background 0.18s !important;
+}
+.nav-apply:hover { background: var(--orange) !important; color: #fff !important; }
+
+/* ── HERO ─────────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  background: var(--dark);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 58px 60px 88px;
+  position: relative;
+}
+
+.hero-line {
+  width: 32px; height: 2px;
+  background: var(--orange);
+  margin-bottom: 36px;
+  animation: fadeUp 0.5s ease 0.1s both;
+}
+
+.hero-title {
+  font-size: clamp(52px, 6.8vw, 108px);
+  font-weight: 700;
+  line-height: 1.01;
+  letter-spacing: -0.04em;
+  color: var(--light);
+  max-width: 920px;
+  animation: fadeUp 0.65s ease 0.18s both;
+}
+
+.hero-row {
+  margin-top: 72px;
+  padding-top: 40px;
+  border-top: 1px solid rgba(237,236,234,0.07);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  animation: fadeUp 0.65s ease 0.3s both;
+}
+
+.hero-sub {
+  font-size: 14px;
+  line-height: 1.75;
+  color: rgba(237,236,234,0.35);
+  max-width: 320px;
+  font-weight: 400;
+}
+
+.hero-nums {
+  display: flex; gap: 52px;
+  text-align: right;
+}
+.hero-num-val {
+  font-family: var(--serif);
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--light);
+  line-height: 1;
+}
+.hero-num-unit {
+  font-family: var(--font);
+  font-size: 18px;
+}
+.hero-num-label {
+  font-size: 11px;
+  color: rgba(237,236,234,0.3);
+  letter-spacing: 0.06em;
+  margin-top: 6px;
+  font-weight: 400;
+}
+
+/* ── STATS BAR ────────────────────────────────────── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--border);
+}
+.stat {
+  padding: 48px 60px;
+  border-right: 1px solid var(--border);
+}
+.stat:last-child { border-right: none; }
+.stat-num {
+  font-family: var(--serif);
+  font-size: 50px; font-weight: 400;
+  letter-spacing: -0.03em; line-height: 1;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.stat-unit { font-family: var(--font); font-size: 24px; }
+.stat-label {
+  font-size: 12px; color: var(--ink-2);
+  font-weight: 400; letter-spacing: 0.02em;
+}
+
+/* ── PORTFOLIO SPOTLIGHT (FuturePlay-style) ───────── */
+.spotlight {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 440px;
+  border-bottom: 1px solid var(--border);
+}
+.spotlight.flip { direction: rtl; }
+.spotlight.flip > * { direction: ltr; }
+
+.spot-text {
+  padding: 80px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid var(--border);
+}
+.spotlight.flip .spot-text { border-right: none; border-left: 1px solid var(--border); }
+
+.spot-tag {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.13em; text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 28px;
+}
+.spot-name {
+  font-size: clamp(36px, 3.8vw, 58px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.0;
+  color: var(--ink);
+}
+.spot-name.light { color: var(--light); }
+.spot-desc {
+  font-size: 14px; color: var(--ink-2);
+  line-height: 1.7; font-weight: 400;
+  max-width: 320px;
+  margin-top: 20px;
+}
+.spot-desc.light { color: rgba(237,236,234,0.4); }
+.spot-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 500;
+  color: var(--orange);
+  text-decoration: none;
+  margin-top: 36px;
+  letter-spacing: 0.03em;
+  transition: gap 0.18s;
+}
+.spot-link:hover { gap: 12px; }
+
+.spot-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: clamp(80px, 10vw, 150px);
+  font-weight: 400;
+  color: rgba(15,14,12,0.05);
+  letter-spacing: -0.05em;
+  user-select: none;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg);
+}
+.spot-visual.dark {
+  background: var(--dark-2);
+  color: rgba(237,236,234,0.04);
+}
+.spot-visual.orange {
+  background: var(--orange-dim);
+}
+
+/* ── FOCUS ────────────────────────────────────────── */
+.section {
+  padding: 88px 60px;
+  border-bottom: 1px solid var(--border);
+}
+.row {
+  display: flex; align-items: baseline; gap: 24px;
+  margin-bottom: 48px;
+}
+.eyebrow {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-2);
+}
+.focus-list { display: flex; flex-wrap: wrap; gap: 10px; }
+.pill {
+  display: inline-block;
+  border: 1px solid var(--border);
+  padding: 10px 22px; border-radius: 4px;
+  font-size: 14px; font-weight: 400;
+  color: var(--ink); letter-spacing: 0.01em;
+  transition: background 0.16s, border-color 0.16s, color 0.16s;
+  cursor: default;
+}
+.pill:hover { background: var(--orange); border-color: var(--orange); color: #fff; }
+
+/* ── FULL PORTFOLIO ───────────────────────────────── */
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.pitem {
+  font-size: 14px; font-weight: 400;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink);
+  transition: color 0.14s, padding-left 0.14s;
+  cursor: default;
+}
+.pitem:hover { color: var(--orange); padding-left: 5px; }
+
+/* ── APPLY CTA ────────────────────────────────────── */
+.cta {
+  background: var(--orange);
+  padding: 100px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+}
+.cta-title {
+  font-size: clamp(32px, 3.8vw, 56px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  color: #fff;
+  max-width: 560px;
+}
+.cta-right {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 20px;
+  flex-shrink: 0;
+}
+.cta-sub {
+  font-size: 13px; color: rgba(255,255,255,0.6);
+  text-align: right; line-height: 1.6; font-weight: 400;
+  max-width: 260px;
+}
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 32px;
+  background: #fff;
+  border: none; border-radius: 4px;
+  font-family: var(--font);
+  font-size: 14px; font-weight: 600;
+  color: var(--orange);
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.18s, box-shadow 0.18s, gap 0.18s;
+}
+.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(0,0,0,0.18); gap: 14px; }
+
+/* ── FOOTER ───────────────────────────────────────── */
+footer {
+  background: var(--dark);
+  padding: 44px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-logo {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 600;
+  letter-spacing: -0.02em; color: var(--light);
+}
+.footer-links {
+  display: flex; gap: 28px; list-style: none;
+}
+.footer-links a {
+  font-size: 12px; color: rgba(237,236,234,0.35);
+  text-decoration: none; transition: color 0.15s;
+}
+.footer-links a:hover { color: var(--light); }
+.footer-copy { font-size: 12px; color: rgba(237,236,234,0.25); }
+
+/* ── Reveal ───────────────────────────────────────── */
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.on { opacity: 1; transform: none; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="/" class="nav-logo">
+    <span class="nav-logo-dot"></span>
+    Mashup Ventures
+  </a>
+  <ul class="nav-r">
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#network">Network</a></li>
+    <li><a href="#contents">Contents</a></li>
+    <li><a href="#apply" class="nav-apply">투자 신청</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-line"></div>
+  <h1 class="hero-title">
+    선배 창업자가<br>미래의 창업자를<br>지원합니다
+  </h1>
+  <div class="hero-row">
+    <p class="hero-sub">
+      2013년 설립.<br>
+      파트너 전원 창업 경험자.<br>
+      시드부터 시리즈 A까지.
+    </p>
+    <div class="hero-nums">
+      <div>
+        <div class="hero-num-val">206</div>
+        <div class="hero-num-label">PORTFOLIO</div>
+      </div>
+      <div>
+        <div class="hero-num-val">11.3<span class="hero-num-unit">조</span></div>
+        <div class="hero-num-label">VALUATION</div>
+      </div>
+      <div>
+        <div class="hero-num-val">12</div>
+        <div class="hero-num-label">EXIT</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat reveal">
+    <div class="stat-num">206</div>
+    <div class="stat-label">포트폴리오 기업</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-num">11.3<span class="stat-unit">조</span></div>
+    <div class="stat-label">누적 기업가치</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-num">2.4<span class="stat-unit">조</span></div>
+    <div class="stat-label">후속 투자 유치</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-num">12</div>
+    <div class="stat-label">IPO / M&amp;A</div>
+  </div>
+</div>
+
+<!-- PORTFOLIO SPOTLIGHT -->
+<div class="spotlight reveal">
+  <div class="spot-text">
+    <div>
+      <div class="spot-tag">Commerce · 2015</div>
+      <div class="spot-name">버킷플레이스</div>
+      <div class="spot-desc">오늘의집. 국내 1위 홈 인테리어 플랫폼. 시리즈 C 이후 기업가치 2조 원 돌파.</div>
+    </div>
+    <a href="#portfolio" class="spot-link">포트폴리오 전체 보기 →</a>
+  </div>
+  <div class="spot-visual orange">집</div>
+</div>
+
+<div class="spotlight flip reveal">
+  <div class="spot-text">
+    <div>
+      <div class="spot-tag">AI · 2021</div>
+      <div class="spot-name">WRTN</div>
+      <div class="spot-desc">국내 최대 AI 플랫폼. 월간 사용자 500만. 생성형 AI 서비스의 새로운 기준.</div>
+    </div>
+    <a href="#portfolio" class="spot-link">더 보기 →</a>
+  </div>
+  <div class="spot-visual dark">AI</div>
+</div>
+
+<div class="spotlight reveal">
+  <div class="spot-text">
+    <div>
+      <div class="spot-tag">Travel · 2012</div>
+      <div class="spot-name">마이리얼트립</div>
+      <div class="spot-desc">여행 액티비티 1위 플랫폼. 코로나 이후 빠른 회복세로 2024년 흑자 전환.</div>
+    </div>
+    <a href="#portfolio" class="spot-link">더 보기 →</a>
+  </div>
+  <div class="spot-visual">여행</div>
+</div>
+
+<!-- FOCUS AREAS -->
+<div class="section reveal">
+  <div class="row">
+    <span class="eyebrow">집중 분야</span>
+  </div>
+  <div class="focus-list">
+    <span class="pill">AI</span>
+    <span class="pill">Robotics</span>
+    <span class="pill">Commerce</span>
+    <span class="pill">Healthcare</span>
+    <span class="pill">IT Services</span>
+    <span class="pill">Deep Tech</span>
+    <span class="pill">Consumer</span>
+  </div>
+</div>
+
+<!-- FULL PORTFOLIO -->
+<div class="section reveal" id="portfolio">
+  <div class="row">
+    <span class="eyebrow">Portfolio</span>
+    <span style="font-size:13px;color:var(--ink-2)">206개사 중 일부</span>
+  </div>
+  <div class="portfolio-grid">
+    <div class="pitem">버킷플레이스</div>
+    <div class="pitem">마이리얼트립</div>
+    <div class="pitem">ScatterLab</div>
+    <div class="pitem">Remember</div>
+    <div class="pitem">Noom</div>
+    <div class="pitem">MobiDays</div>
+    <div class="pitem">SentBe</div>
+    <div class="pitem">StyleShare</div>
+    <div class="pitem">Shiftee</div>
+    <div class="pitem">Finda</div>
+    <div class="pitem">Humanscape</div>
+    <div class="pitem">WRTN</div>
+    <div class="pitem">LionRocket</div>
+    <div class="pitem">Beeble</div>
+    <div class="pitem">AIM Intelligence</div>
+    <div class="pitem">Qeexo</div>
+    <div class="pitem">Airbility</div>
+    <div class="pitem">Aiden Lab</div>
+    <div class="pitem">FarmSkin</div>
+    <div class="pitem">Riibotics</div>
+    <div class="pitem">Purple AI</div>
+    <div class="pitem">Rentre</div>
+    <div class="pitem">NanoForge AI</div>
+    <div class="pitem">Bridge Works</div>
+    <div class="pitem">Vivident</div>
+    <div class="pitem">Khameleon</div>
+    <div class="pitem">ConportLab</div>
+    <div class="pitem">Uncommon Home</div>
+    <div class="pitem">Upstairs</div>
+    <div class="pitem">H2O Hospitality</div>
+    <div class="pitem">MaiHub</div>
+    <div class="pitem">Sorcerics</div>
+    <div class="pitem">Serro</div>
+    <div class="pitem">VelyMonkeys</div>
+    <div class="pitem">Viologen</div>
+    <div class="pitem">Purple AI</div>
+  </div>
+</div>
+
+<!-- APPLY CTA -->
+<div class="cta reveal" id="apply">
+  <div class="cta-title">
+    지금 만들고 있는<br>회사가 있나요?
+  </div>
+  <div class="cta-right">
+    <p class="cta-sub">
+      시드 라운드부터 함께합니다.<br>
+      TIPS 연계 가능.
+    </p>
+    <a href="#" class="cta-btn">투자 신청하기 →</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <span class="nav-logo-dot"></span>
+    Mashup Ventures
+  </div>
+  <ul class="footer-links">
+    <li><a href="#">Team</a></li>
+    <li><a href="#">Portfolio</a></li>
+    <li><a href="#">Contents</a></li>
+    <li><a href="#">Careers</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 Mashup Ventures</div>
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', scrollY > 10);
+  });
+
+  const obs = new IntersectionObserver(
+    entries => entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('on'); obs.unobserve(e.target); }
+    }),
+    { threshold: 0.1 }
+  );
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>
