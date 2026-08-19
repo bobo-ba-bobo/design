@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design Deck — Instagram Carousel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --m: 60px;
+  --wSub: #616161; --wTert: #7a7a7a; --wMuted: #858585;
+  --bSub: #e6e6e6; --bTert: #bfbfbf; --bMuted: #9e9e9e;
+  --bDiv: #2e2e2e; --lGray: #e4e4e4; --fGray: #f6f6f6;
+}
+
+body {
+  background: #0e0e0e;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 48px 20px; gap: 0;
+  font-family: 'Inter', 'Pretendard', sans-serif;
+}
+
+/* ── controls ── */
+.controls {
+  width: 900px; display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 28px;
+}
+.ctrl-label { color: #333; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; font-weight: 300; }
+.dl-all {
+  background: transparent; border: 1px solid #252525; color: #3a3a3a;
+  font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: .15em;
+  text-transform: uppercase; padding: 10px 22px; cursor: pointer; transition: all .2s; font-weight: 300;
+}
+.dl-all:hover { border-color: #555; color: #777; }
+.dl-all:disabled { opacity: .35; cursor: default; }
+
+/* ── slide wrapper ── */
+.sw { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 28px; }
+.sw-label { color: #282828; font-size: 10px; letter-spacing: .15em; text-transform: uppercase; font-weight: 300; }
+.dl-btn {
+  background: transparent; border: 1px solid #1e1e1e; color: #303030;
+  font-family: 'Inter', sans-serif; font-size: 9px; letter-spacing: .14em;
+  text-transform: uppercase; padding: 7px 16px; cursor: pointer; transition: all .2s; font-weight: 300;
+  align-self: flex-end;
+}
+.dl-btn:hover { border-color: #444; color: #666; }
+
+/* ════════════════════════════════════════
+   SLIDE  — 900 × 1200
+   Content block 900 × 900 centered vertically → 150px breathing room top & bottom
+   ════════════════════════════════════════ */
+.slide {
+  width: 900px; height: 1200px;
+  display: flex; align-items: center;   /* ← centers the 900px inner vertically */
+  overflow: hidden; flex-shrink: 0;
+}
+
+/* inner block: exactly 900 × 900  */
+.in {
+  width: 900px; height: 900px;
+  padding: 52px var(--m);
+  display: flex; flex-direction: column;
+  flex-shrink: 0;
+}
+
+/* shared atoms */
+.topbar { display: flex; justify-content: space-between; align-items: baseline; flex-shrink: 0; margin-bottom: 0; }
+.nb { font-size: 11px; font-weight: 300; color: var(--bMuted); letter-spacing: .1em; }
+.nw { font-size: 11px; font-weight: 300; color: var(--wMuted); letter-spacing: .1em; }
+.tb { font-size: 11px; font-weight: 300; color: var(--bDiv); letter-spacing: .1em; }
+.tw { font-size: 11px; font-weight: 300; color: var(--lGray); letter-spacing: .1em; }
+
+.dw { width: 100%; height: 1px; background: var(--lGray); flex-shrink: 0; }
+.db { width: 100%; height: 1px; background: var(--bDiv); flex-shrink: 0; }
+.ds-w { width: 44px; height: 1px; background: var(--lGray); flex-shrink: 0; }
+.ds-b { width: 44px; height: 1px; background: var(--bDiv); flex-shrink: 0; }
+
+.ko { font-family: 'Pretendard', sans-serif; }
+
+
+/* ══════════════════════════════════════════════════════
+   01 · COVER  white
+══════════════════════════════════════════════════════ */
+#s01 { background: #fff; }
+#s01 .in { justify-content: space-between; }
+.c1-word { font-size: 144px; font-weight: 800; color: #000; letter-spacing: -.05em; line-height: .88; }
+.c1-foot { flex-shrink: 0; }
+.c1-bottom { display: flex; justify-content: space-between; align-items: baseline; margin-top: 20px; }
+.c1-site { font-size: 16px; font-weight: 300; color: #000; }
+.c1-year { font-size: 11px; font-weight: 300; color: var(--wTert); letter-spacing: .1em; }
+.c1-sub { font-size: 12px; font-weight: 300; color: var(--wMuted); margin-top: 6px; }
+
+
+/* ══════════════════════════════════════════════════════
+   02 · PHILOSOPHY  black
+══════════════════════════════════════════════════════ */
+#s02 { background: #000; }
+#s02 .in { gap: 0; }
+.c2-head { font-family: 'Pretendard', sans-serif; font-size: 88px; font-weight: 700; color: #fff; line-height: 1.0; letter-spacing: -.03em; margin-top: 24px; flex-shrink: 0; }
+.c2-label { font-size: 10px; font-weight: 300; color: var(--bMuted); letter-spacing: .18em; text-transform: uppercase; margin-top: 28px; margin-bottom: 12px; flex-shrink: 0; }
+.c2-items { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; }
+.c2-item { display: grid; grid-template-columns: 20px 1fr; gap: 20px; align-items: start; padding: 16px 0; border-top: 1px solid var(--bDiv); }
+.c2-num { font-size: 10px; font-weight: 300; color: var(--bMuted); letter-spacing: .1em; padding-top: 3px; }
+.c2-en { font-size: 15px; font-weight: 500; color: var(--bSub); margin-bottom: 6px; letter-spacing: -.01em; }
+.c2-ko { font-family: 'Pretendard', sans-serif; font-size: 12px; font-weight: 300; color: var(--bTert); line-height: 1.7; }
+
+
+/* ══════════════════════════════════════════════════════
+   03 · COLOR  white
+══════════════════════════════════════════════════════ */
+#s03 { background: #fff; }
+#s03 .in { gap: 0; }
+.c3-title { font-size: 64px; font-weight: 700; color: #000; letter-spacing: -.04em; margin-top: 20px; flex-shrink: 0; }
+.c3-sub { font-family: 'Pretendard', sans-serif; font-size: 13px; font-weight: 300; color: var(--wSub); margin-top: 6px; margin-bottom: 16px; flex-shrink: 0; }
+.c3-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+.c3-panel { display: flex; flex-direction: column; }
+.c3-panel-head { font-size: 9px; font-weight: 400; letter-spacing: .18em; text-transform: uppercase; padding-bottom: 8px; flex-shrink: 0; }
+.c3-sw { display: flex; align-items: center; gap: 14px; padding: 11px 0; border-top: 1px solid var(--lGray); }
+.c3-sw-b { display: flex; align-items: center; gap: 14px; padding: 11px 0; border-top: 1px solid var(--bDiv); }
+.sw-box { width: 42px; height: 42px; flex-shrink: 0; }
+.sw-hex { font-size: 13px; font-weight: 500; }
+.sw-role { font-size: 10px; font-weight: 300; margin-top: 3px; }
+.c3-banned { font-size: 11px; font-weight: 300; color: var(--wMuted); margin-top: 12px; flex-shrink: 0; }
+.c3-dark { background: #0a0a0a; padding: 12px; }
+
+
+/* ══════════════════════════════════════════════════════
+   04 · TYPOGRAPHY  black
+══════════════════════════════════════════════════════ */
+#s04 { background: #000; }
+#s04 .in { gap: 0; }
+.c4-title { font-size: 64px; font-weight: 700; color: #fff; letter-spacing: -.04em; margin-top: 20px; flex-shrink: 0; }
+/* specimen block */
+.c4-spec { flex-shrink: 0; margin-top: 20px; }
+.c4-spec-label { font-size: 9px; font-weight: 300; color: var(--bMuted); letter-spacing: .18em; text-transform: uppercase; margin-bottom: 4px; }
+.c4-en { font-size: 56px; font-weight: 700; color: var(--bSub); letter-spacing: -.03em; line-height: 1.05; }
+.c4-ko { font-family: 'Pretendard', sans-serif; font-size: 46px; font-weight: 700; color: var(--bSub); letter-spacing: -.01em; line-height: 1.05; }
+/* weight scale */
+.c4-weights { display: flex; flex-direction: column; gap: 0; flex-shrink: 0; margin-top: 18px; }
+.c4-w-row { display: flex; align-items: baseline; gap: 16px; padding: 10px 0; border-top: 1px solid var(--bDiv); }
+.c4-w-tag { font-size: 9px; font-weight: 300; color: var(--bMuted); letter-spacing: .14em; width: 60px; flex-shrink: 0; }
+.c4-w-text { color: #fff; letter-spacing: -.02em; }
+.c4-w-spec { margin-left: auto; font-size: 10px; font-weight: 300; color: var(--bMuted); letter-spacing: .06em; }
+/* scale */
+.c4-scale { flex: 1; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0; margin-top: 16px; }
+.c4-sc-item { padding-right: 14px; border-right: 1px solid var(--bDiv); }
+.c4-sc-item:not(:first-child) { padding-left: 14px; }
+.c4-sc-item:last-child { border-right: none; }
+.c4-sc-name { font-size: 9px; font-weight: 300; color: var(--bMuted); letter-spacing: .14em; margin-bottom: 6px; }
+.c4-sc-val { font-size: 12px; font-weight: 400; color: var(--bTert); line-height: 1.6; }
+.c4-sc-use { font-family: 'Pretendard', sans-serif; font-size: 10px; font-weight: 300; color: var(--bMuted); margin-top: 4px; }
+
+
+/* ══════════════════════════════════════════════════════
+   05 · LAYOUT  white
+══════════════════════════════════════════════════════ */
+#s05 { background: #fff; }
+#s05 .in { gap: 0; }
+.c5-title { font-size: 64px; font-weight: 700; color: #000; letter-spacing: -.04em; margin-top: 20px; flex-shrink: 0; }
+.c5-wf { flex-shrink: 0; margin-top: 20px; background: var(--fGray); height: 280px; position: relative; }
+.wf-screen { position: absolute; top: 18px; left: 28px; right: 28px; bottom: 18px; background: #fff; border: 1px solid #e2e2e2; }
+.wf-ml { position: absolute; top: 0; left: 0; bottom: 0; width: 32px; background: #ebebeb; }
+.wf-mr { position: absolute; top: 0; right: 0; bottom: 0; width: 32px; background: #ebebeb; }
+.wf-nav { position: absolute; top: 0; left: 32px; right: 32px; height: 22px; border-bottom: 1px solid #e2e2e2; display: flex; align-items: center; padding: 0 10px; gap: 6px; }
+.wf-d { height: 4px; background: #ddd; border-radius: 1px; }
+.wf-sp { flex: 1; }
+.wf-hero { position: absolute; top: 22px; left: 32px; right: 32px; height: 90px; background: #e6e6e6; display: flex; align-items: center; justify-content: center; }
+.wf-hbar { width: 60px; height: 3px; background: #ccc; }
+.wf-rows { position: absolute; top: 124px; left: 44px; right: 44px; display: flex; flex-direction: column; gap: 8px; }
+.wf-r { height: 6px; background: #e2e2e2; border-radius: 1px; }
+.wf-r.s { width: 55%; }
+.wf-mlabel { position: absolute; bottom: 10px; left: 2px; font-size: 8px; font-weight: 300; color: var(--wTert); letter-spacing: .04em; writing-mode: vertical-rl; }
+.c5-specs { flex: 1; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; margin-top: 18px; }
+.sp-item { padding-right: 20px; border-right: 1px solid var(--lGray); }
+.sp-item:not(:first-child) { padding-left: 20px; }
+.sp-item:last-child { border-right: none; }
+.sp-dev { font-size: 13px; font-weight: 500; color: #000; margin-bottom: 8px; letter-spacing: -.01em; }
+.sp-d { font-size: 12px; font-weight: 300; color: var(--wSub); line-height: 1.75; }
+.c5-foot { font-family: 'Pretendard', sans-serif; font-size: 11px; font-weight: 300; color: var(--wMuted); margin-top: 14px; flex-shrink: 0; }
+
+
+/* ══════════════════════════════════════════════════════
+   06 · WHITESPACE  black
+══════════════════════════════════════════════════════ */
+#s06 { background: #000; }
+#s06 .in { justify-content: space-between; }
+.c6-main { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.c6-ko { font-family: 'Pretendard', sans-serif; font-size: 86px; font-weight: 700; color: #fff; line-height: 1.08; letter-spacing: -.03em; }
+.c6-en1 { font-size: 17px; font-weight: 300; color: var(--bTert); margin-top: 36px; }
+.c6-en2 { font-size: 17px; font-weight: 300; color: var(--bTert); margin-top: 3px; }
+.c6-foot { font-family: 'Pretendard', sans-serif; font-size: 11px; font-weight: 300; color: var(--bMuted); flex-shrink: 0; }
+
+
+/* ══════════════════════════════════════════════════════
+   07 · INTERACTION  white
+══════════════════════════════════════════════════════ */
+#s07 { background: #fff; }
+#s07 .in { gap: 0; }
+.c7-title { font-size: 64px; font-weight: 700; color: #000; letter-spacing: -.04em; margin-top: 20px; flex-shrink: 0; }
+.c7-sub { font-family: 'Pretendard', sans-serif; font-size: 13px; font-weight: 300; color: var(--wSub); margin-top: 6px; flex-shrink: 0; }
+/* visual demos */
+.c7-demos { flex-shrink: 0; margin-top: 20px; display: flex; flex-direction: column; gap: 0; }
+.c7-demo-row { display: grid; grid-template-columns: 80px 1fr 1fr 1fr; gap: 0; align-items: center; padding: 14px 0; border-top: 1px solid var(--lGray); }
+.c7-demo-label { font-size: 9px; font-weight: 300; color: var(--wMuted); letter-spacing: .15em; text-transform: uppercase; }
+.c7-state { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.c7-arrow { font-size: 14px; color: var(--lGray); justify-self: center; }
+/* button states */
+.c7-btn-def { display: inline-block; padding: 9px 20px; border: 1px solid #000; font-size: 12px; font-weight: 400; color: #000; letter-spacing: .06em; }
+.c7-btn-hov { display: inline-block; padding: 9px 20px; border: 1px solid #000; font-size: 12px; font-weight: 400; color: #fff; background: #000; letter-spacing: .06em; }
+/* link states */
+.c7-link-def { font-size: 14px; font-weight: 400; color: #000; text-decoration: none; }
+.c7-link-hov { font-size: 14px; font-weight: 400; color: var(--wSub); text-decoration: underline; }
+/* fade states */
+.c7-fade-def { width: 60px; height: 36px; background: #e4e4e4; opacity: .3; }
+.c7-fade-hov { width: 60px; height: 36px; background: #e4e4e4; opacity: 1; }
+/* timing tag */
+.c7-timing { font-size: 9px; font-weight: 300; color: var(--wMuted); letter-spacing: .08em; }
+
+/* not allowed */
+.c7-denied { flex-shrink: 0; margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.c7-no { background: var(--fGray); padding: 11px 14px; display: flex; gap: 8px; align-items: center; }
+.c7-x { font-size: 11px; color: #ccc; }
+.c7-no-text { font-family: 'Pretendard', sans-serif; font-size: 11px; font-weight: 300; color: var(--wTert); }
+.c7-note { font-family: 'Pretendard', sans-serif; font-size: 10px; font-weight: 300; color: var(--wMuted); line-height: 1.65; margin-top: auto; flex-shrink: 0; }
+
+
+/* ══════════════════════════════════════════════════════
+   08 · REFERENCES  black
+══════════════════════════════════════════════════════ */
+#s08 { background: #000; }
+#s08 .in { gap: 0; }
+.c8-title { font-size: 64px; font-weight: 700; color: #fff; letter-spacing: -.04em; margin-top: 20px; flex-shrink: 0; }
+/* sites section */
+.c8-section-label { font-size: 9px; font-weight: 300; color: var(--bMuted); letter-spacing: .18em; text-transform: uppercase; margin-top: 20px; margin-bottom: 0; flex-shrink: 0; }
+.c8-sites { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; flex-shrink: 0; }
+.c8-site { padding: 14px 0; border-top: 1px solid var(--bDiv); padding-right: 16px; }
+.c8-site:not(:first-child) { padding-left: 16px; border-left: 1px solid var(--bDiv); }
+.c8-site-badge { font-size: 9px; font-weight: 300; color: var(--bMuted); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 6px; }
+.c8-site-name { font-size: 14px; font-weight: 500; color: #fff; letter-spacing: -.01em; }
+/* movements section */
+.c8-movements { flex: 1; display: flex; flex-direction: column; gap: 0; }
+.c8-mv { display: grid; grid-template-columns: 1fr auto; align-items: baseline; padding: 13px 0; border-top: 1px solid var(--bDiv); gap: 16px; }
+.c8-mv-name { font-size: 14px; font-weight: 400; color: var(--bSub); }
+.c8-mv-desc { font-family: 'Pretendard', sans-serif; font-size: 11px; font-weight: 300; color: var(--bTert); margin-top: 4px; }
+.c8-mv-type { font-size: 9px; font-weight: 300; color: var(--bMuted); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; align-self: start; padding-top: 3px; }
+
+
+/* ══════════════════════════════════════════════════════
+   09 · 6 PRINCIPLES  white
+══════════════════════════════════════════════════════ */
+#s09 { background: #fff; }
+#s09 .in { gap: 0; }
+.c9-title { font-size: 64px; font-weight: 700; color: #000; letter-spacing: -.04em; margin-top: 20px; flex-shrink: 0; }
+.c9-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 0; margin-top: 16px; }
+.c9-item { padding: 16px 0; border-top: 1px solid var(--lGray); }
+.c9-item:nth-child(odd) { padding-right: 24px; border-right: 1px solid var(--lGray); }
+.c9-item:nth-child(even) { padding-left: 24px; }
+.c9-num { font-size: 9px; font-weight: 300; color: var(--wTert); letter-spacing: .14em; margin-bottom: 8px; }
+.c9-name { font-family: 'Pretendard', sans-serif; font-size: 17px; font-weight: 700; color: #000; margin-bottom: 6px; letter-spacing: -.01em; }
+.c9-desc { font-family: 'Pretendard', sans-serif; font-size: 11px; font-weight: 300; color: var(--wSub); line-height: 1.65; }
+
+
+/* ══════════════════════════════════════════════════════
+   10 · END  black
+══════════════════════════════════════════════════════ */
+#s10 { background: #000; }
+#s10 .in { justify-content: space-between; }
+.c0-main { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.c0-url { font-size: 96px; font-weight: 700; color: #fff; letter-spacing: -.05em; line-height: .94; }
+.c0-info { margin-top: 40px; }
+.c0-name { font-size: 15px; font-weight: 400; color: var(--bSub); margin-bottom: 10px; }
+.c0-detail { font-family: 'Pretendard', sans-serif; font-size: 12px; font-weight: 300; color: var(--bTert); line-height: 1.8; }
+.c0-foot { display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
+.c0-fl { font-family: 'Pretendard', sans-serif; font-size: 11px; font-weight: 300; color: var(--bMuted); }
+.c0-fr { font-size: 11px; font-weight: 300; color: var(--bMuted); letter-spacing: .08em; }
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <span class="ctrl-label">Design Deck — 900 × 1200 · 10 slides</span>
+  <button class="dl-all" id="dlAll" onclick="downloadAll()">Download All (PNG)</button>
+</div>
+
+
+<!-- ═══════════════════════ 01 · COVER ═══════════════════════ -->
+<div class="sw">
+  <span class="sw-label">01 · Cover</span>
+  <div class="slide" id="s01">
+    <div class="in">
+      <div class="topbar"><span class="nw">01 / 10</span><span class="tw">Design System</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+        <div class="c1-word">DE</div>
+        <div class="c1-word">SI</div>
+        <div class="c1-word">GN</div>
+      </div>
+      <div class="c1-foot">
+        <div class="dw"></div>
+        <div class="c1-bottom">
+          <span class="c1-site">bosungbaik.com</span>
+          <span class="c1-year">Bosung Baik · 2026</span>
+        </div>
+        <div class="c1-sub">Design System &amp; Visual Language</div>
+      </div>
+    </div>
+  </div>
+  <button class="dl-btn" onclick="dl('s01','01-cover')">Download PNG</button>
+</div>
+
+
+<!-- ═══════════════════════ 02 · PHILOSOPHY ═══════════════════════ -->
+<div class="sw">
+  <span class="sw-label">02 · Philosophy</span>
+  <div class="slide" id="s02" style="background:#000;">
+    <div class="in">
+      <div class="topbar"><span class="nb">02 / 10</span><span class="tb">Philosophy</span></div>
+      <div class="c2-head">절제된<br>깔끔함</div>
+      <div class="c2-label">Design Philosophy</div>
+      <div class="db"></div>
+      <div class="c2-items">
+        <div class="c2-item">
+          <span class="c2-num">01</span>
+          <div>
+            <div class="c2-en">Content First</div>
+            <div class="c2-ko">콘텐츠가 주인공이고 디자인은 방해하지 않는다</div>
+          </div>
+        </div>
+        <div class="c2-item">
+          <span class="c2-num">02</span>
+          <div>
+            <div class="c2-en">Static over Dynamic</div>
+            <div class="c2-ko">과한 인터랙션보다 정돈된 정적 레이아웃</div>
+          </div>
+        </div>
+        <div class="c2-item">
+          <span class="c2-num">03</span>
+          <div>
+            <div class="c2-en">Whitespace as Design</div>
+            <div class="c2-ko">빈 공간이 고급스러움을 만든다</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="dl-btn" onclick="dl('s02','02-philosophy')">Download PNG</button>
+</div>
+
+
+<!-- ═══════════════════════ 03 · COLOR ═══════════════════════ -->
+<div class="sw">
+  <span class="sw-label">03 · Color</span>
+  <div class="slide" id="s03" style="background:#fff;">
+    <div class="in">
+      <div class="topbar"><span class="nw">03 / 10</span><span class="tw">Color</span></div>
+      <div class="c3-title">Color</div>
+      <div class="c3-sub">흑/백 배경에 따라 회색이 달라진다</div>
+      <div class="dw"></div>
+      <div class="c3-grid" style="margin-top:14px;">
+        <!-- On White -->
+        <div class="c3-panel">
+          <div class="c3-panel-head" style="color:var(--wTert)">On White</div>
+          <div class="c3-sw">
+            <div class="sw-box" style="background:#000;"></div>
+            <div><div class="sw-hex" style="color:#000">#000000</div><div class="sw-role" style="color:var(--wTert)">Primary text</div></div>
+          </div>
+          <div class="c3-sw">
+            <div class="sw-box" style="background:#616161;"></div>
+            <div><div class="sw-hex" style="color:#000">#616161</div><div class="sw-role" style="color:var(--wTert)">Secondary / Hover</div></div>
+          </div>
+          <div class="c3-sw">
+            <div class="sw-box" style="background:#7a7a7a;"></div>
+            <div><div class="sw-hex" style="color:#000">#7A7A7A</div><div class="sw-role" style="color:var(--wTert)">Tertiary</div></div>
+          </div>
+          <div class="c3-sw">
+            <div class="sw-box" style="background:#858585;"></div>
+            <div><div class="sw-hex" style="color:#000">#858585</div><div class="sw-role" style="color:var(--wTert)">Muted / Caption</div></div>
+          </div>
+        </div>
+        <!-- On Black -->
+        <div class="c3-panel c3-dark">
+          <div class="c3-panel-head" style="color:var(--bMuted)">On Black</div>
+          <div class="c3-sw-b">
+            <div class="sw-box" style="background:#fff;outline:1px solid #2a2a2a;"></div>
+            <div><div class="sw-hex" style="color:#fff">#FFFFFF</div><div class="sw-role" style="color:var(--bTert)">Primary text</div></div>
+          </div>
+          <div class="c3-sw-b">
+            <div class="sw-box" style="background:#e6e6e6;"></div>
+            <div><div class="sw-hex" style="color:#fff">#E6E6E6</div><div class="sw-role" style="color:var(--bTert)">Secondary</div></div>
+          </div>
+          <div class="c3-sw-b">
+            <div class="sw-box" style="background:#bfbfbf;"></div>
+            <div><div class="sw-hex" style="color:#fff">#BFBFBF</div><div class="sw-role" style="color:var(--bTert)">Tertiary</div></div>
+          </div>
+          <div class="c3-sw-b">
+            <div class="sw-box" style="background:#9e9e9e;"></div>
+            <div><div class="sw-hex" style="color:#fff">#9E9E9E</div><div class="sw-role" style="color:var(--bTert)">Muted / Caption</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="c3-banned">금지 — 컬러 액센트 · 그라디언트 · 과도한 섀도우</div>
+    </div>
+  </div>
+  <button class="dl-btn" onclick="dl('s03','03-color')">Download PNG</button>
+</div>
+
+
+<!-- ═══════════════════════ 04 · TYPOGRAPHY ═══════════════════════ -->
+<div class="sw">
+  <span class="sw-label">04 · Typography</span>
+  <div class="slide" id="s04" style="background:#000;">
+    <div class="in">
+      <div class="topbar"><span class="nb">04 / 10</span><span class="tb">Typography</span></div>
+      <div class="c4-title">Typography</div>
+      <div class="db" style="margin-top:18px;"></div>
+      <!-- specimens -->
+      <div class="c4-spec" style="margin-top:16px;">
+        <div class="c4-spec-label">Inter — English</div>
+        <div class="c4-en">Aa Bb Cc&nbsp;&nbsp;1 2 3</div>
+      </div>
+      <div class="c4-spec" style="margin-top:14px;">
+        <div class="c4-spec-label">Pretendard — 한글</div>
+        <div class="c4-ko">가나다라마바사아자차</div>
+      </div>
+      <!-- weight scale -->
+      <div class="c4-weights" style="margin-top:14px;">
+        <div class="c4-w-row">
+          <span class="c4-w-tag">DISPLAY</span>
+          <span class="c4-w-text" style="font-size:28px;font-weight:700;color:#fff;">Design</span>
+          <span class="c4-w-spec">72px · Bold</span>
+        </div>
+        <div class="c4-w-row">
+          <span class="c4-w-tag">HEADING</span>
+          <span class="c4-w-text" style="font-size:22px;font-weight:500;color:var(--bSub);">Section Title</span>
+          <span class="c4-w-spec">24px · Medium</span>
+        </div>
+        <div class="c4-w-row">
+          <span class="c4-w-tag">BODY</span>
+          <span class="c4-w-text" style="font-size:15px;font-weight:300;color:var(--bTert);">본문 텍스트가 이 크기로 읽힌다</span>
+          <span class="c4-w-spec">15–16px · Light</span>
+        </div>
+        <div class="c4-w-row">
+          <span class="c4-w-tag">CAPTION</span>
+          <span class="c4-w-text" style="font-size:11px;font-weight:300;color:var(--bMuted);letter-spacing:.12em;text-transform:uppercase;">Label / Date</span>
+          <span class="c4-w-spec">10–12px · Light</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="dl-btn" onclick="dl('s04','04-typography')">Download PNG</button>
+</div>
+
+
+<!-- ═══════════════════════ 05 · LAYOUT ═══════════════════════ -->
+<div class="sw">
+  <span class="sw-label">05 · Layout</span>
+  <div class="slide" id="s05" style="background:#fff;">
+    <div class="in">
+      <div class="topbar"><span class="nw">05 / 10</span><span class="tw">Layout</span></div>
+      <div class="c5-title">Layout</div>
+      <div class="dw" style="margin-top:16px;"></div>
+      <div class="c5-wf" style="margin-top:18px;">
+        <div class="wf-screen">
+          <div class="wf-ml"></div><div class="wf-mr"></div>
+          <div class="wf-nav">
+            <div class="wf-d" style="width:40px;"></div>
+            <div class="wf-sp"></div>
+            <div class="wf-d" style="width:22px;"></div>
+            <div class="wf-d" style="width:22px;"></div>
+          </div>
+          <div class="wf-hero"><div class="wf-hbar"></div></div>
+          <div class="wf-rows">
+            <div class="wf-r"></div>
+            <div class="wf-r s"></div>
+            <div class="wf-r"></div>
+            <div class="wf-r" style="width:40%;"></div>
+          </div>
+          <div class="wf-mlabel">120px</div>
+        </div>
+      </div>
+      <div class="c5-specs" style="margin-top:16px;">
+        <div class="sp-item">
+          <div class="sp-dev">Desktop</div>
+          <div class="sp-d">1200px content<br>120px margin</div>
+        </div>
+        <div class="sp-item">
+          <div class="sp-dev">Tablet</div>
+          <div class="sp-d">810px<br>~60px margin</div>
+        </div>
+        <div class="sp-item">
+          <div class="sp-dev">Mobile</div>
+          <div class="sp-d">390px<br>40px margin</div>
+        </div>
+      </div>
+      <div class="c5-foot" style="margin-top:auto;">단일 열 구조 · 선형 레이아웃 · Flexbox 기반 · 100px+ 섹션 간 여백</div>
+    </div>
+  </div>
+  <button class="dl-btn" onclick="dl('s05','05-layout')">Download PNG</button>
+</div>
+
+
+<!-- ═══════════════════════ 06 · WHITESPACE ═══════════════════════ -->
+<div class="sw">
+  <span class="sw-label">06 · Whitespace</span>
+  <div class="slide" id="s06" style="background:#000;">
+    <div class="in">
+      <div class="topbar"><span class="nb">06 / 10</span><span class="tb">Whitespace</span></div>
+      <div class="c6-main">
+        <div class="c6-ko">여백을<br>아끼지<br>않는다</div>
+        <div class="ds-b" style="margin-top:36px;"></div>
+        <div class="c6-en1">Whitespace is not empty space —</div>
+        <div class="c6-en2">it is design.</div>
+      </div>
+      <div class="c6-foot">빈 공간을 두려워하지 않는다</div>
+    </div>
+  </div>
+  <button class="dl-btn" onclick="dl('s06','06-whitespace')">Download PNG</button>
+</div>
+
+
+<!-- ═══════════════════════ 07 · INTERACTION ═══════════════════════ -->
+<div class="sw">
+  <span class="sw-label">07 · Interaction</span>
+  <div class="slide" id="s07" style="background:#fff;">
+    <div class="in">
+      <div class="topbar"><span class="nw">07 / 10</span><span class="tw">Interaction</span></div>
+      <div class="c7-title">Interaction</div>
+      <div class="c7-sub">과하지 않게 — 호버 효과 정도가 적정선</div>
+      <div class="dw" style="margin-top:14px;"></div>
+
+      <!-- visual demos -->
+      <div class="c7-demos">
+        <!-- button hover -->
+        <div class="c7-demo-row">
+          <span class="c7-demo-label">Button</span>
+          <div class="c7-state">
+            <div class="c7-btn-def">View work</div>
+            <span class="c7-timing">Default</span>
+          </div>
+          <div class="c7-arrow">→</div>
+          <div class="c7-state">
+            <div class="c7-btn-hov">View work</div>
+            <span class="c7-timing">Hover · 0.2s ease</span>
+          </div>
+        </div>
+        <!-- link hover -->
+        <div class="c7-demo-row">
+          <span class="c7-demo-label">Link</span>
+          <div class="c7-state">
+            <span class="c7-link-def">Read more</span>
+            <span class="c7-timing">Default</span>
+          </div>
+          <div class="c7-arrow">→</div>
+          <div class="c7-state">
+            <span class="c7-link-hov">Read more</span>
+            <span class="c7-timing">Hover · color + underline</span>
+          </div>
+        </div>
+        <!-- page fade -->
+        <div class="c7-demo-row">
+          <span class="c7-demo-label">Page</span>
+          <div class="c7-state">
+            <div class="c7-fade-def"></div>
+            <span class="c7-timing">opacity 0</span>
+          </div>
+          <div class="c7-arrow">→</div>
+          <div class="c7-state">
+            <div class="c7-fade-hov"></div>
+            <span class="c7-timing">opacity 1 · 0.4s ease</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- not allowed -->
+      <div style="font-size:9px;font-weight:300;color:var(--wTert);letter-spacing:.18em;text-transform:uppercase;margin-top:16px;margin-bottom:6px;flex-shrink:0;">Not Allowed</div>
+      <div class="c7-denied">
+        <div class="c7-no"><span class="c7-x">✕</span><span class="c7-no-text">과도한 패럴랙스 스크롤</span></div>
+        <div class="c7-no"><span class="c7-x">✕</span><span class="c7-no-text">무거운 로딩 애니메이션</span></div>
+        <div class="c7-no"><span class="c7-x">✕</span><span class="c7-no-text">모달 / 팝업</span></div>
+        <div class="c7-no"><span class="c7-x">✕</span><span class="c7-no-text">자동 재생 미디어</span></div>
+      </div>
+      <div class="c7-note" style="margin-top:12px;">예외: 특정 페이지에서는 스크롤 애니메이션, 마우스 추적 등 허용 — 단, 전체 톤을 벗어나지 않는 범위</div>
+    </div>
+  </div>
+  <button class="dl-btn" onclick="dl('s07','07-interaction')">Download PNG</button>
+</div>
+
+
+<!-- ═══════════════════════ 08 · REFERENCES ═══════════════════════ -->
+<div class="sw">
+  <span class="sw-label">08 · References</span>
+  <div class="slide" id="s08" style="background:#000;">
+    <div class="in">
+      <div class="topbar"><span class="nb">08 / 10</span><span class="tb">References</span></div>
+      <div class="c8-title">References</div>
+      <div class="db" style="margin-top:16px;"></div>
+
+      <!-- Sites -->
+      <div class="c8-section-label">Sites</div>
+      <div class="c8-sites" style="margin-top:8px;">
+        <div class="c8-site">
+          <div class="c8-site-badge">Most Preferred</div>
+          <div class="c8-site-name">itsdpark.com</div>
+        </div>
+        <div class="c8-site">
+          <div class="c8-site-badge">Layout Reference</div>
+          <div class="c8-site-name">jihoon.im</div>
+        </div>
+        <div class="c8-site">
+          <div class="c8-site-badge">Interaction Reference</div>
+          <div class="c8-site-name">annamona.co</div>
+        </div>
+      </div>
+
+      <!-- Design movements -->
+      <div class="c8-section-label" style="margin-top:16px;">Movements &amp; Designers</div>
+      <div class="c8-movements" style="margin-top:8px;">
+        <div class="c8-mv">
+          <div>
+            <div class="c8-mv-name">Swiss International Style</div>
+            <div class="c8-mv-desc">그리드, 타이포그래피, 객관성의 원천</div>
+          </div>
+          <div class="c8-mv-type">Movement</div>
+        </div>
+        <div class="c8-mv">
+          <div>
+            <div class="c8-mv-name">Dieter Rams</div>
+            <div class="c8-mv-desc">Less but better — 10 principles of good design</div>
+          </div>
+          <div class="c8-mv-type">Designer</div>
+        </div>
+        <div class="c8-mv">
+          <div>
+            <div class="c8-mv-name">Muji Design Philosophy</div>
+            <div class="c8-mv-desc">불필요한 것을 덜어내는 미학</div>
+          </div>
+          <div class="c8-mv-type">Brand</div>
+        </div>
+        <div class="c8-mv">
+          <div>
+            <div class="c8-mv-name">Jan Tschichold</div>
+            <div class="c8-mv-desc">The New Typography — 현대 편집 디자인의 기원</div>
+          </div>
+          <div class="c8-mv-type">Book</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="dl-btn" onclick="dl('s08','08-references')">Download PNG</button>
+</div>
+
+
+<!-- ═══════════════════════ 09 · 6 PRINCIPLES ═══════════════════════ -->
+<div class="sw">
+  <span class="sw-label">09 · 6 Principles</span>
+  <div class="slide" id="s09" style="background:#fff;">
+    <div class="in">
+      <div class="topbar"><span class="nw">09 / 10</span><span class="tw">6 Principles</span></div>
+      <div class="c9-title">6 Principles</div>
+      <div class="c9-grid" style="margin-top:14px;">
+        <div class="c9-item">
+          <div class="c9-num">01</div>
+          <div class="c9-name">흑/백/회색만 쓴다</div>
+          <div class="c9-desc">색상에서 오는 깔끔함이 핵심</div>
+        </div>
+        <div class="c9-item">
+          <div class="c9-num">02</div>
+          <div class="c9-name">여백을 아끼지 않는다</div>
+          <div class="c9-desc">빈 공간이 고급스러움을 만든다</div>
+        </div>
+        <div class="c9-item">
+          <div class="c9-num">03</div>
+          <div class="c9-name">텍스트가 디자인이다</div>
+          <div class="c9-desc">폰트와 크기 대비로 계층을 만든다</div>
+        </div>
+        <div class="c9-item">
+          <div class="c9-num">04</div>
+          <div class="c9-name">인터랙션은 절제한다</div>
+          <div class="c9-desc">호버 정도가 적정, 특별한 페이지에서만 예외</div>
+        </div>
+        <div class="c9-item">
+          <div class="c9-num">05</div>
+          <div class="c9-name">흑백 반전은 의도적으로</div>
+          <div class="c9-desc">섹션 구분과 시각적 리듬을 위해 사용</div>
+        </div>
+        <div class="c9-item">
+          <div class="c9-num">06</div>
+          <div class="c9-name">itsdpark.com을 기준점으로</div>
+          <div class="c9-desc">극도의 미니멀 + 프로페셔널이 지향점</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="dl-btn" onclick="dl('s09','09-principles')">Download PNG</button>
+</div>
+
+
+<!-- ═══════════════════════ 10 · END ═══════════════════════ -->
+<div class="sw">
+  <span class="sw-label">10 · End</span>
+  <div class="slide" id="s10" style="background:#000;">
+    <div class="in">
+      <div class="topbar"><span class="nb" style="visibility:hidden">—</span><span class="tb" style="visibility:hidden">—</span></div>
+      <div class="c0-main">
+        <div class="c0-url">bosung<br>baik.com</div>
+        <div class="c0-info">
+          <div class="ds-b" style="margin-bottom:18px;"></div>
+          <div class="c0-name">Bosung Baik</div>
+          <div class="c0-detail">
+            Investment Associate, Mashup Ventures<br>
+            bbs@mashupventures.co<br>
+            linkedin.com/in/bosungbaik
+          </div>
+        </div>
+      </div>
+      <div class="c0-foot">
+        <span class="c0-fl">2026</span>
+        <span class="c0-fr">10 / 10</span>
+      </div>
+    </div>
+  </div>
+  <button class="dl-btn" onclick="dl('s10','10-end')">Download PNG</button>
+</div>
+
+
+<script>
+const SLIDES = [
+  ['s01','01-cover'],['s02','02-philosophy'],['s03','03-color'],
+  ['s04','04-typography'],['s05','05-layout'],['s06','06-whitespace'],
+  ['s07','07-interaction'],['s08','08-references'],['s09','09-principles'],['s10','10-end']
+];
+
+async function cap(id) {
+  return html2canvas(document.getElementById(id), {
+    scale:2, useCORS:true, allowTaint:false, backgroundColor:null,
+    width:900, height:1200, logging:false
+  });
+}
+
+async function dl(id, name) {
+  const b = document.getElementById(id).parentElement.querySelector('.dl-btn');
+  b.textContent = 'Generating…'; b.disabled = true;
+  try {
+    const c = await cap(id);
+    const a = document.createElement('a');
+    a.download = name+'.png'; a.href = c.toDataURL('image/png'); a.click();
+  } catch(e) { alert('오류: '+e.message); }
+  finally { b.textContent = 'Download PNG'; b.disabled = false; }
+}
+
+async function downloadAll() {
+  const btn = document.getElementById('dlAll');
+  btn.disabled = true;
+  for (let i=0; i<SLIDES.length; i++) {
+    btn.textContent = `Generating ${i+1} / 10…`;
+    try {
+      const c = await cap(SLIDES[i][0]);
+      const a = document.createElement('a');
+      a.download = SLIDES[i][1]+'.png'; a.href = c.toDataURL('image/png'); a.click();
+      await new Promise(r=>setTimeout(r,400));
+    } catch(e) { console.error(e); }
+  }
+  btn.textContent = 'Download All (PNG)'; btn.disabled = false;
+}
+</script>
+</body>
+</html>
