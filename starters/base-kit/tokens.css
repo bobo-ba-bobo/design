@@ -1,0 +1,113 @@
+/* base-kit / tokens.css
+   토큰 4개 + 모션 3개 + 여백 6개. 새 사이트 시작점.
+   색 값만 바꾸면 톤이 통째로 바뀐다. */
+
+:root{
+  /* 팔레트: 이 4개가 전부 */
+  --ink:   #11110f;
+  --paper: #e9e6df;
+  --acid:  #d6ff43;
+  --line:  #11110f2e;
+
+  /* 파생 */
+  --muted: color-mix(in srgb, var(--ink) 55%, var(--paper));
+
+  /* 모션: 커브 하나 */
+  --ease:   cubic-bezier(.16, 1, .3, 1);
+  --t-fast: .25s;
+  --t-base: .45s;
+  --t-slow: 1.1s;
+
+  /* 세로 여백 스케일 */
+  --s-1:  3vh;  --s-2:  8vh;  --s-3: 13vh;
+  --s-4: 18vh;  --s-5: 22vh;  --s-6: 30vh;
+
+  /* 가로 거터 */
+  --gut: 3.2vw;
+
+  color: var(--ink);
+  background: var(--paper);
+  font-synthesis: none;
+}
+
+/* 반전 스코프. 섹션에 class="invert" */
+.invert{
+  --ink:   #f4f4f4;
+  --paper: #050505;
+  --line:  #ffffff1f;
+  --muted: #a1a1aa;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* 다크모드로 쓰려면 이 두 블록을 켠다 */
+/*
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#f4f4f4; --paper:#050505; --line:#ffffff1f; --muted:#a1a1aa;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#f4f4f4; --paper:#050505; --line:#ffffff1f; --muted:#a1a1aa;
+}
+*/
+
+*{ box-sizing: border-box }
+html{ scroll-behavior: smooth }
+body{ margin:0; overflow-x:hidden; background:var(--paper) }
+a{ color:inherit; text-decoration:none }
+button{ font:inherit }
+img,svg,video{ max-width:100%; display:block }
+
+/* 타입 스케일: 디스플레이와 마이크로만, 중간은 비운다 */
+.display{
+  font-size: clamp(64px, 9.5vw, 158px);
+  line-height: .79;
+  letter-spacing: -.075em;
+  font-weight: 500;
+  max-width: 12ch;
+  margin: 0;
+}
+.h2{
+  font-size: clamp(38px, 5.1vw, 80px);
+  line-height: 1.05;
+  letter-spacing: -.045em;
+  font-weight: 500;
+  max-width: 18ch;
+  margin: 0;
+}
+p{ font-size: 16px; line-height: 1.55; max-width: 42ch }
+.label{
+  font: 10px/1.5 ui-monospace, "DM Mono", "JetBrains Mono", monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* 클립 리빌 (patterns/clip-line-reveal.md) */
+.clip{ display:block; overflow:hidden; padding-bottom:.08em }
+.clip > span{ display:block }
+
+/* 호버 두 종류 (patterns/motion-discipline.md) */
+.u{ position:relative }
+.u::after{
+  content:""; position:absolute; bottom:-5px; left:0; right:100%;
+  height:1px; background:currentColor;
+  transition: right var(--t-base) var(--ease);
+}
+.u:hover::after{ right:0 }
+
+.round{
+  display:grid; place-items:center;
+  width:62px; height:62px; border-radius:50%;
+  background:var(--ink); color:var(--paper);
+  transition: all .3s var(--ease);
+}
+.round:hover{ background:var(--acid); color:var(--ink); transform:rotate(-35deg) }
+
+/* 전역 reduced-motion. 절대 빼지 말 것 */
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior: auto }
+  *{ transition:none !important; animation:none !important }
+  .intro{ display:none }
+}
